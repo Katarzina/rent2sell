@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma db push && prisma db seed"
+    "postinstall": "prisma generate && prisma db push",
+    "vercel-build": "prisma generate && prisma db push && prisma db seed && next build"
   },
   "prisma": {
     "seed": "ts-node --project tsconfig.seed.json prisma/seed.ts"
@@ -83,13 +83,13 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
     "vaul": "^0.9.9",
     "zod": "^4.0.10"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "tsx": "^4.20.3"
   }
 }
