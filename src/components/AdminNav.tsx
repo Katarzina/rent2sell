@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 export default function AdminNav() {
   const { data: session } = useSession();
 
-  if (!session?.user?.role === 'ADMIN') {
+  if (session?.user?.role !== 'ADMIN') {
     return null;
   }
 

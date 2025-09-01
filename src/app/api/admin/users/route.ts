@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
@@ -23,7 +25,7 @@ export async function GET() {
         createdAt: true,
         _count: {
           select: {
-            properties: true,
+            rentalItems: true,
           },
         },
       },

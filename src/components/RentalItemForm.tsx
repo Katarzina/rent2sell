@@ -206,8 +206,8 @@ export default function RentalItemForm({
               <Input
                 id="deposit"
                 type="number"
-                value={formData.deposit}
-                onChange={(e) => setFormData({ ...formData, deposit: parseFloat(e.target.value) })}
+                value={formData.deposit ?? ''}
+                onChange={(e) => setFormData({ ...formData, deposit: e.target.value ? parseFloat(e.target.value) : null })}
                 min="0"
                 step="0.01"
               />

@@ -14,7 +14,7 @@ interface RentalItemGridProps {
 
 export default function RentalItemGrid({ items, onToggleFavorite, onViewDetails, onRentNow }: RentalItemGridProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full max-w-6xl mx-auto">
       {items.map((item) => (
         <RentalItemCard
           key={item.id}

@@ -1,28 +1,24 @@
-'use client';
-
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useRecoilValue } from 'recoil';
-import { isPropertyFavoritedSelector } from '@/atoms/propertiesAtom';
-import { useProperties } from '@/hooks/useProperties';
+import { useFavorites } from '@/hooks/useFavorites';
 
 interface FavoriteButtonProps {
-  propertyId: number;
+  itemId: number;
 }
 
-export default function FavoriteButton({ propertyId }: FavoriteButtonProps) {
-  const isFavorite = useRecoilValue(isPropertyFavoritedSelector(propertyId));
-  const { toggleFavorite } = useProperties();
+export default function FavoriteButton({ itemId }: FavoriteButtonProps) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorite = isFavorite(itemId);
 
   return (
     <Button
       size="icon"
       className={`absolute top-4 right-4 bg-white/90 hover:bg-white ${
-        isFavorite ? 'text-red-500' : 'text-gray-600'
+        favorite ? 'text-red-500' : 'text-gray-600'
       }`}
-      onClick={() => toggleFavorite(propertyId)}
+      onClick={() => toggleFavorite(itemId)}
     >
-      <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+      <Heart className={`w-5 h-5 ${favorite ? 'fill-current' : ''}`} />
     </Button>
   );
 }

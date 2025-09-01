@@ -1,18 +1,6 @@
 import { atom, selector, selectorFamily } from 'recoil';
 
-interface RentalItem {
-  id: number;
-  title: string;
-  category: string;
-  price: number;
-  image: string;
-  condition: string;
-  rating: number;
-  location: string;
-  minRentDays: number;
-  deposit?: number;
-  features: string[];
-}
+import { RentalItem } from '@/types';
 
 // Atom to store all rental items
 export const rentalItemsState = atom<RentalItem[]>({

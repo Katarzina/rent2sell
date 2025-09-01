@@ -55,7 +55,7 @@ export default function RentalItemsClient({ initialItems }: RentalItemsClientPro
     if (!editingItem) return;
 
     try {
-      const response = await fetch(\`/api/rental-items/\${editingItem.id}\`, {
+      const response = await fetch('/api/rental-items/' + editingItem.id, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export default function RentalItemsClient({ initialItems }: RentalItemsClientPro
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      const response = await fetch(\`/api/rental-items/\${id}\`, {
+      const response = await fetch('/api/rental-items/' + id, {
         method: 'DELETE',
       });
 
@@ -142,11 +142,11 @@ export default function RentalItemsClient({ initialItems }: RentalItemsClientPro
                 <TableCell>{item.price.toLocaleString('cs-CZ')} Kč/day</TableCell>
                 <TableCell>{item.location}</TableCell>
                 <TableCell>
-                  <span className={\`px-2 py-1 rounded-full text-xs \${
-                    item.available 
+                  <span className={'px-2 py-1 rounded-full text-xs ' + 
+                    (item.available 
                       ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }\`}>
+                      : 'bg-red-100 text-red-800')
+                  }>
                     {item.available ? 'Available' : 'Unavailable'}
                   </span>
                 </TableCell>

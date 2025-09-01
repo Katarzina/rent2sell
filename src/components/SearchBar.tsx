@@ -5,8 +5,7 @@ import { Input } from './ui/input';
 import { Search } from "lucide-react";
 import { Button } from './ui/button';
 import { useLocale } from '@/contexts/LocaleContext';
-import { useSetRecoilState } from 'recoil';
-import { searchQueryState } from '@/atoms/searchAtom';
+import { useRouter } from 'next/navigation';
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -15,11 +14,13 @@ interface SearchBarProps {
 export default function SearchBar({ onSearch }: SearchBarProps) {
   const { t } = useLocale();
   const [localSearchQuery, setLocalSearchQuery] = React.useState('');
-  const setGlobalSearchQuery = useSetRecoilState(searchQueryState);
+  const router = useRouter();
 
   const handleSearch = (value: string) => {
     setLocalSearchQuery(value);
-    setGlobalSearchQuery(value);
+    if (value.trim()) {
+      router.push(`/search?q=${encodeURIComponent(value)}`);
+    }
     if (onSearch) {
       onSearch(value);
     }

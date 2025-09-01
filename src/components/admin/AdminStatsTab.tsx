@@ -7,19 +7,17 @@ import { TrendingUp, Users, Home, UserCheck, Eye, Heart, MessageSquare } from 'l
 
 interface AdminStats {
   totalUsers: number;
-  totalProperties: number;
-  totalAgents: number;
+  totalItems: number;
   totalInquiries: number;
   recentUserGrowth: number;
-  recentPropertyGrowth: number;
+  recentItemGrowth: number;
   usersByRole: {
     USER: number;
-    AGENT: number;
     ADMIN: number;
   };
-  propertiesByStatus: {
-    featured: number;
-    regular: number;
+  itemsByAvailability: {
+    available: number;
+    unavailable: number;
   };
 }
 
@@ -78,30 +76,18 @@ export function AdminStatsTab() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Items</CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProperties}</div>
+            <div className="text-2xl font-bold">{stats.totalItems}</div>
             <p className="text-xs text-muted-foreground">
               <TrendingUp className="inline h-3 w-3 mr-1" />
-              +{stats.recentPropertyGrowth}% from last month
+              +{stats.recentItemGrowth}% from last month
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Agents</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.totalAgents}</div>
-            <p className="text-xs text-muted-foreground">
-              Professional real estate agents
-            </p>
-          </CardContent>
-        </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -137,13 +123,6 @@ export function AdminStatsTab() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <UserCheck className="h-4 w-4 text-green-500" />
-                  <span>Agents</span>
-                </div>
-                <span className="font-medium">{stats.usersByRole.AGENT}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-red-500" />
                   <span>Administrators</span>
                 </div>
@@ -155,31 +134,31 @@ export function AdminStatsTab() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Properties by Status</CardTitle>
+            <CardTitle>Items by Status</CardTitle>
             <CardDescription>
-              Featured vs regular property listings
+              Available vs unavailable items
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-yellow-500" />
-                  <span>Featured Properties</span>
+                  <Eye className="h-4 w-4 text-green-500" />
+                  <span>Available Items</span>
                 </div>
-                <span className="font-medium">{stats.propertiesByStatus.featured}</span>
+                <span className="font-medium">{stats.itemsByAvailability.available}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Home className="h-4 w-4 text-gray-500" />
-                  <span>Regular Properties</span>
+                  <span>Unavailable Items</span>
                 </div>
-                <span className="font-medium">{stats.propertiesByStatus.regular}</span>
+                <span className="font-medium">{stats.itemsByAvailability.unavailable}</span>
               </div>
               <div className="pt-2 border-t">
                 <div className="flex items-center justify-between text-sm font-medium">
-                  <span>Total Properties</span>
-                  <span>{stats.totalProperties}</span>
+                  <span>Total Items</span>
+                  <span>{stats.totalItems}</span>
                 </div>
               </div>
             </div>
@@ -199,19 +178,19 @@ export function AdminStatsTab() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
-                {((stats.usersByRole.AGENT / stats.totalUsers) * 100).toFixed(1)}%
+                {((stats.usersByRole.ADMIN / stats.totalUsers) * 100).toFixed(1)}%
               </div>
-              <div className="text-sm text-muted-foreground">Agent Ratio</div>
+              <div className="text-sm text-muted-foreground">Admin Ratio</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {((stats.propertiesByStatus.featured / stats.totalProperties) * 100).toFixed(1)}%
+                {((stats.itemsByAvailability.available / stats.totalItems) * 100).toFixed(1)}%
               </div>
-              <div className="text-sm text-muted-foreground">Featured Properties</div>
+              <div className="text-sm text-muted-foreground">Available Items</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
-                {(stats.totalInquiries / stats.totalProperties).toFixed(1)}
+                {(stats.totalInquiries / stats.totalItems).toFixed(1)}
               </div>
               <div className="text-sm text-muted-foreground">Avg Inquiries/Property</div>
             </div>

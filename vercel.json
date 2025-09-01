@@ -6,7 +6,7 @@
     }
   },
   "env": {
-    "NEXT_PUBLIC_APP_NAME": "Rent2sail",
+    "NEXT_PUBLIC_APP_NAME": "Rent2sell",
     "NEXT_PUBLIC_APP_DESCRIPTION": "Rent Anything You Need - Equipment, Fashion, and More"
   }
 }

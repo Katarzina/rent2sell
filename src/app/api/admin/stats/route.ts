@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
@@ -14,78 +16,69 @@ export async function GET() {
       );
     }
 
-    // Get current date and last month date
     const now = new Date();
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
 
-    // Fetch basic counts
     const [
       totalUsers,
-      totalProperties,
-      totalAgents,
+      totalItems,
       totalInquiries,
       recentUsers,
-      recentProperties,
+      recentItems,
       usersByRole,
-      propertiesByStatus
+      itemsByAvailability
     ] = await Promise.all([
       prisma.user.count(),
-      prisma.property.count(),
-      prisma.agentProfile.count(),
+      prisma.rentalItem.count(),
       prisma.inquiry.count(),
       prisma.user.count({ where: { createdAt: { gte: lastMonth } } }),
-      prisma.property.count({ where: { createdAt: { gte: lastMonth } } }),
+      prisma.rentalItem.count({ where: { createdAt: { gte: lastMonth } } }),
       prisma.user.groupBy({
         by: ['role'],
         _count: { id: true },
       }),
-      prisma.property.groupBy({
-        by: ['featured'],
+      prisma.rentalItem.groupBy({
+        by: ['available'],
         _count: { id: true },
       }),
     ]);
 
-    // Calculate growth percentages
     const usersLastMonth = totalUsers - recentUsers;
-    const propertiesLastMonth = totalProperties - recentProperties;
+    const itemsLastMonth = totalItems - recentItems;
     
     const recentUserGrowth = usersLastMonth > 0 
       ? Math.round((recentUsers / usersLastMonth) * 100) 
       : 0;
     
-    const recentPropertyGrowth = propertiesLastMonth > 0 
-      ? Math.round((recentProperties / propertiesLastMonth) * 100) 
+    const recentItemGrowth = itemsLastMonth > 0 
+      ? Math.round((recentItems / itemsLastMonth) * 100) 
       : 0;
 
-    // Format user roles data
     const userRoleMap = usersByRole.reduce((acc, item) => {
       acc[item.role] = item._count.id;
       return acc;
     }, {} as Record<string, number>);
 
-    // Format properties status data
-    const propertiesStatusMap = propertiesByStatus.reduce((acc, item) => {
-      if (item.featured) {
-        acc.featured = item._count.id;
+    const itemsAvailabilityMap = itemsByAvailability.reduce((acc, item) => {
+      if (item.available) {
+        acc.available = item._count.id;
       } else {
-        acc.regular = item._count.id;
+        acc.unavailable = item._count.id;
       }
       return acc;
-    }, { featured: 0, regular: 0 });
+    }, { available: 0, unavailable: 0 });
 
     const stats = {
       totalUsers,
-      totalProperties,
-      totalAgents,
+      totalItems,
       totalInquiries,
       recentUserGrowth,
-      recentPropertyGrowth,
+      recentItemGrowth,
       usersByRole: {
         USER: userRoleMap.USER || 0,
-        AGENT: userRoleMap.AGENT || 0,
         ADMIN: userRoleMap.ADMIN || 0,
       },
-      propertiesByStatus: propertiesStatusMap,
+      itemsByAvailability: itemsAvailabilityMap,
     };
 
     return NextResponse.json({ stats });

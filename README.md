@@ -1,4 +1,4 @@
-# Rent2Sail
+# Rent2Sell
 
 A modern rental platform built with Next.js 13, Prisma, and TypeScript.
 
@@ -35,12 +35,12 @@ For testing purposes, you can use the following admin account:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/rent2sail.git
+git clone https://github.com/yourusername/rent2sell.git
 ```
 
 2. Install dependencies:
 ```bash
-cd rent2sail
+cd rent2sell
 yarn install
 ```
 
@@ -66,7 +66,7 @@ Create a `.env.local` file with the following variables:
 
 ```env
 # Application
-NEXT_PUBLIC_APP_NAME="Rent2sail"
+NEXT_PUBLIC_APP_NAME="Rent2sell"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # Database

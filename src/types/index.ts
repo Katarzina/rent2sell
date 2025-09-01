@@ -1,21 +1,7 @@
-export enum ProductCategory {
-  BOATS = 'BOATS',
-  EQUIPMENT = 'EQUIPMENT',
-  FASHION = 'FASHION',
-  ELECTRONICS = 'ELECTRONICS',
-  SPORTS = 'SPORTS',
-  PARTY = 'PARTY',
-  TRAVEL = 'TRAVEL',
-  HOME = 'HOME',
-  OTHER = 'OTHER'
-}
+import { ProductCategory, ItemCondition } from '@prisma/client';
 
-export enum ItemCondition {
-  NEW = 'NEW',
-  LIKE_NEW = 'LIKE_NEW',
-  GOOD = 'GOOD',
-  FAIR = 'FAIR'
-}
+export { ProductCategory, ItemCondition };
+
 
 // Rental item types
 export interface RentalItem {
@@ -28,10 +14,19 @@ export interface RentalItem {
   rating: number;
   location: string;
   minRentDays: number;
-  deposit?: number;
+  deposit: number | null;
   features: string[];
-  description?: string;
-  available?: boolean;
+  description: string;
+  maxRentDays: number;
+  rules?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: string;
+  user?: {
+    name: string | null;
+    email: string;
+  };
+  available: boolean;
 }
 
 // Inquiry types

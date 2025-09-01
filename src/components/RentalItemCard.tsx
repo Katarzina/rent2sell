@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Star, Calendar, MapPin, Coins } from "lucide-react";
-import { useRecoilValue } from 'recoil';
-import { isPropertyFavoritedSelector } from '@/atoms/propertiesAtom';
+import { useFavorites } from '@/hooks/useFavorites';
 
 import { RentalItem } from '@/types';
 
@@ -35,7 +34,8 @@ export default function RentalItemCard({
   onViewDetails,
   onRentNow
 }: RentalItemCardProps) {
-  const isFavorite = useRecoilValue(isPropertyFavoritedSelector(item.id));
+  const { isFavorite } = useFavorites();
+  const favorite = isFavorite(item.id);
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-xl transition-shadow duration-300">
@@ -47,15 +47,13 @@ export default function RentalItemCard({
         />
         <Button
           size="icon"
-          className={`absolute top-2 right-2 bg-white/90 hover:bg-white z-10 ${
-            isFavorite ? 'text-red-500' : 'text-gray-600'
-          }`}
+          className={`absolute top-2 right-2 bg-white/90 hover:bg-white z-10 ${favorite ? 'text-red-500' : 'text-gray-600'}`}
           onClick={(e) => {
             e.stopPropagation();
             onToggleFavorite();
           }}
         >
-          <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 ${favorite ? 'fill-current' : ''}`} />
         </Button>
         <Badge className={`absolute top-2 left-2 ${getCategoryColor(item.category)} text-white`}>
           {item.category}
