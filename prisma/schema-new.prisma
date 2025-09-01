@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL") 
+}
+
+// User model for authentication and authorization
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  password      String?   // For credential login
+  image         String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  properties    Property[] @relation("UserProperties")
+  favorites     Favorite[]
+  inquiries     Inquiry[]
+  agentProfile  AgentProfile? // One-to-one relation
+}
+
+// NextAuth.js models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// User roles enum
+enum UserRole {
+  USER
+  AGENT
+  ADMIN
+}
+
+// AgentProfile - дополнительная информация для пользователей с ролью AGENT
+model AgentProfile {
+  id              Int       @id @default(autoincrement())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Agent-specific fields
+  title           String    // e.g. "Senior Real Estate Agent"
+  bio             String    @db.Text
+  phone           String
+  rating          Float     @default(0)
+  reviewCount     Int       @default(0)
+  soldProperties  Int       @default(0)
+  yearsExperience Int
+  languages       String[]
+  specialties     String[]
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  inquiries       Inquiry[]
+  reviews         Review[]
+}
+
+// Property model for real estate listings
+model Property {
+  id          Int       @id @default(autoincrement())
+  title       String
+  location    String
+  price       String
+  area        String
+  image       String
+  bedrooms    Int
+  bathrooms   Int
+  rating      Float
+  featured    Boolean   @default(false)
+  amenities   String[]
+  description String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Owner relation (user with AGENT role)
+  userId      String?
+  user        User?     @relation("UserProperties", fields: [userId], references: [id])
+  
+  // Relations
+  inquiries   Inquiry[]
+  tours       Tour[]
+  favorites   Favorite[]
+}
+
+// Inquiry model for property/agent inquiries
+model Inquiry {
+  id         String    @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  message    String    @db.Text
+  createdAt  DateTime  @default(now())
+  
+  // User relation (who made the inquiry)
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  
+  // Relations
+  property   Property? @relation(fields: [propertyId], references: [id])
+  propertyId Int?
+  
+  // Relation to AgentProfile instead of Agent
+  agentProfile   AgentProfile? @relation(fields: [agentProfileId], references: [id])
+  agentProfileId Int?
+}
+
+// Tour model for scheduled property tours
+model Tour {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String
+  tourDate   DateTime
+  tourTime   String
+  createdAt  DateTime @default(now())
+  
+  // Relations
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId Int
+}
+
+// Favorite model for user favorites
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  createdAt  DateTime @default(now())
+  
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property   Property @relation(fields: [propertyId], references: [id])
+  propertyId Int
+  
+  @@unique([userId, propertyId])
+}
+
+// Review model for agent reviews
+model Review {
+  id             String       @id @default(cuid())
+  rating         Int          // 1-5 stars
+  comment        String       @db.Text
+  createdAt      DateTime     @default(now())
+  
+  // Relations to AgentProfile instead of Agent
+  agentProfile   AgentProfile @relation(fields: [agentProfileId], references: [id])
+  agentProfileId Int
+}
+
+// BlogPost model for blog articles
+model BlogPost {
+  id           String     @id @default(cuid())
+  title        String
+  slug         String     @unique
+  excerpt      String
+  content      String     @db.Text
+  image        String
+  author       String
+  authorAvatar String
+  date         DateTime
+  readTime     String
+  category     String
+  tags         String[]
+  views        Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
