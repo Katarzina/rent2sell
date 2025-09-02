@@ -19,7 +19,7 @@ A modern rental platform built with Next.js 13, Prisma, and TypeScript.
 
 For testing purposes, you can use the following admin account:
 
-- Email: admin@rent2sail.com
+- Email: admin@rent2sell.com
 - Password: password123
 - Role: ADMIN
 
