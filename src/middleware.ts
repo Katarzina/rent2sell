@@ -28,7 +28,7 @@ export default withAuth(
           if (isPublicRoute) {
             // Check protected methods for public routes
             const protectedApiRoutes = [
-              { path: "/api/rental-items", methods: ["POST", "PATCH", "DELETE"], role: "ADMIN" },
+              { path: "/api/rental-items", methods: ["POST", "PATCH", "DELETE"], role: "USER" },
             ]
 
             for (const route of protectedApiRoutes) {

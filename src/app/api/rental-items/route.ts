@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     const session = await getAuthSession();
     console.log('Session:', session);
 
-    if (!session || session.user?.role !== 'ADMIN') {
+    if (!session?.user) {
       console.log('Unauthorized - session:', session?.user);
       return NextResponse.json(
         { error: 'Unauthorized' },
