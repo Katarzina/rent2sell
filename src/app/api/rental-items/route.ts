@@ -72,6 +72,17 @@ export async function GET() {
 }
 
 // POST /api/rental-items - Создать новый предмет
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
 export async function POST(request: Request) {
   console.log('POST /api/rental-items called');
   try {
@@ -107,7 +118,12 @@ export async function POST(request: Request) {
     });
 
     console.log('Successfully created item:', item);
-    return NextResponse.json(item);
+    return new NextResponse(JSON.stringify(item), {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
     console.error('Failed to create rental item:', error);
     if (error instanceof Error) {

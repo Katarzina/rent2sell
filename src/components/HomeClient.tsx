@@ -40,6 +40,7 @@ export default function HomeClient({ initialItems }: HomeClientProps) {
 
       const newItem = await response.json();
       setRentalItems(prev => [newItem, ...prev]);
+      setFilteredItems(prev => [newItem, ...prev]);
       toast({ title: 'Success', description: 'Item created successfully' });
       setIsAddItemOpen(false);
     } catch (error) {
