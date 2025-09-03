@@ -32,7 +32,27 @@ export default function SwaggerWrapper({ spec }: SwaggerWrapperProps) {
 
   return (
     <div ref={ref}>
-      <SwaggerUI spec={spec} />
+      <SwaggerUI 
+        spec={spec}
+        requestInterceptor={(req) => {
+          // Get the session token from cookies
+          const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+            const [key, value] = cookie.split('=').map(c => c.trim());
+            acc[key] = value;
+            return acc;
+          }, {} as Record<string, string>);
+          
+          const sessionToken = cookies['next-auth.session-token'];
+          
+          if (sessionToken) {
+            req.headers = {
+              ...req.headers,
+              'Authorization': `Bearer ${sessionToken}`,
+            };
+          }
+          return req;
+        }}
+      />
     </div>
   )
 }
