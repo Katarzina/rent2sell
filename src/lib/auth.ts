@@ -57,7 +57,8 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          image: user.image
+          image: user.image,
+          emailVerified: user.emailVerified
         }
       }
     })
@@ -70,7 +71,8 @@ export const authOptions: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role
+            role: user.role,
+            emailVerified: user.emailVerified
           },
           process.env.NEXTAUTH_SECRET!,
           { expiresIn: '7d' }
@@ -117,6 +119,7 @@ export const authOptions: NextAuthOptions = {
         email: dbUser.email,
         image: dbUser.image,
         role: dbUser.role,
+        emailVerified: dbUser.emailVerified,
         accessToken: token.accessToken,
       }
     },
