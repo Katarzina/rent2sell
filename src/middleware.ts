@@ -1,71 +1,58 @@
-import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
+import jwt from 'jsonwebtoken'
 
-export default withAuth(
-  function middleware(req) {
-    // Custom logic if needed
-    return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const pathname = req.nextUrl.pathname
-
-        // API routes protection
-        if (pathname.startsWith("/api")) {
-          // Public API routes
-          const publicApiRoutes = [
-            "/api/auth",
-            "/api/rental-items",
-            "/api/swagger"
-          ]
-          
-          // Check if it's a public route
-          const isPublicRoute = publicApiRoutes.some(route => 
-            pathname.startsWith(route)
-          )
-
-          if (isPublicRoute) {
-            // Check protected methods for public routes
-            const protectedApiRoutes = [
-              { path: "/api/rental-items", methods: ["POST", "PATCH", "DELETE"], role: "USER" },
-            ]
-
-            for (const route of protectedApiRoutes) {
-              if (pathname.startsWith(route.path) && route.methods.includes(req.method)) {
-                // Need to check method and role
-                if (!token) return false
-                if (route.role === "ADMIN" && token.role !== "ADMIN") return false
-                if (route.role === "AGENT" && !["AGENT", "ADMIN"].includes(token.role as string)) return false
-              }
-            }
-            return true
-          }
-        }
-
-        // Page routes protection
-        if (pathname.startsWith("/dashboard")) {
-          return !!token
-        }
-
-        if (pathname.startsWith("/admin")) {
-          return token?.role === "ADMIN"
-        }
-
-        return true
-      },
-    },
-    pages: {
-      signIn: "/auth/signin",
-      error: "/auth/error",
-    },
-  }
-)
+const JWT_SECRET = process.env.NEXTAUTH_SECRET!
 
 export const config = {
   matcher: [
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/api/:path*",
+    '/api/rental-items/:function*',
+    '/api/favorites/:function*',
+    '/api/reviews/:function*'
   ]
+}
+
+export async function middleware(request: NextRequest) {
+  // Allow GET requests
+  if (request.method === 'GET') {
+    return NextResponse.next()
+  }
+
+  // Check for session token
+  const sessionToken = request.cookies.get('next-auth.session-token')
+  if (sessionToken) {
+    // If session token exists, allow the request
+    return NextResponse.next()
+  }
+
+  // Check for Bearer token as fallback
+  const authHeader = request.headers.get('authorization')
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json(
+      { error: 'Unauthorized - No token provided' },
+      { status: 401 }
+    )
+  }
+
+  // Verify Bearer token
+  const token = authHeader.split(' ')[1]
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET)
+    
+    // Add user info to request headers
+    const requestHeaders = new Headers(request.headers)
+    requestHeaders.set('x-user-id', (decoded as any).id)
+    requestHeaders.set('x-user-role', (decoded as any).role)
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      }
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Unauthorized - Invalid token' },
+      { status: 401 }
+    )
+  }
 }

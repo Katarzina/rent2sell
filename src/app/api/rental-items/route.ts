@@ -1,29 +1,83 @@
+/**
+ * @swagger
+ * /api/rental-items:
+ *   get:
+ *     tags:
+ *       - RentalItems
+ *     summary: Get all rental items
+ *     responses:
+ *       200:
+ *         description: List of rental items
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/RentalItem'
+ *   post:
+ *     tags:
+ *       - RentalItems
+ *     summary: Create a new rental item
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RentalItem'
+ *     responses:
+ *       201:
+ *         description: Rental item created successfully
+ *       401:
+ *         description: Unauthorized
+ * components:
+ *   schemas:
+ *     RentalItem:
+ *       type: object
+ *       required:
+ *         - title
+ *         - category
+ *         - price
+ *         - condition
+ *         - location
+ *       properties:
+ *         title:
+ *           type: string
+ *         category:
+ *           type: string
+ *           enum: [BOATS, EQUIPMENT, FASHION, ELECTRONICS, SPORTS, PARTY, TRAVEL, OTHER]
+ *         price:
+ *           type: number
+ *         image:
+ *           type: array
+ *           items:
+ *             type: string
+ *         condition:
+ *           type: string
+ *           enum: [NEW, LIKE_NEW, GOOD, FAIR]
+ *         location:
+ *           type: string
+ *         features:
+ *           type: array
+ *           items:
+ *             type: string
+ *         description:
+ *           type: string
+ *         minRentDays:
+ *           type: integer
+ *         maxRentDays:
+ *           type: integer
+ *         deposit:
+ *           type: number
+ */
+
 import { NextResponse } from 'next/server';
 import { getAuthSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/rental-items - Получить все предметы
 export async function GET() {
-  console.log('GET /api/rental-items called');
   try {
-    // Test database connection
-    try {
-      await prisma.$connect();
-      console.log('Database connection successful');
-    } catch (connError) {
-      console.error('Database connection error:', connError);
-      return NextResponse.json(
-        { error: 'Database connection failed' },
-        { status: 500 }
-      );
-    }
-
-    console.log('Fetching rental items from database...');
-    
-    // Count total items first
-    const count = await prisma.rentalItem.count();
-    console.log('Total items in database:', count);
-
     const items = await prisma.rentalItem.findMany({
       orderBy: {
         createdAt: 'desc'
@@ -38,59 +92,20 @@ export async function GET() {
       }
     });
 
-    console.log('Successfully fetched items from database:', items);
-
-    if (!items || items.length === 0) {
-      console.log('No items found in database');
-      return NextResponse.json(
-        { message: 'No items found', items: [] },
-        { status: 200 }
-      );
-    }
-
-    const response = NextResponse.json(items);
-    console.log('Sending response:', { 
-      status: response.status, 
-      itemCount: items.length 
-    });
-    return response;
+    return NextResponse.json(items);
   } catch (error) {
-    console.error('Database error while fetching rental items:', error);
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
+    console.error('Failed to fetch rental items:', error);
     return NextResponse.json(
       { error: 'Failed to fetch rental items' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
-// POST /api/rental-items - Создать новый предмет
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
-    },
-  });
-}
-
 export async function POST(request: Request) {
-  console.log('POST /api/rental-items called');
   try {
     const session = await getAuthSession();
-    console.log('Session:', session);
-
     if (!session?.user) {
-      console.log('Unauthorized - session:', session?.user);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -98,40 +113,16 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
-    console.log('Creating item with data:', data);
-
     const item = await prisma.rentalItem.create({
       data: {
-        title: data.title,
-        category: data.category,
-        price: data.price,
-        image: data.image,
-        condition: data.condition,
-        rating: data.rating,
-        location: data.location,
-        minRentDays: data.minRentDays,
-        deposit: data.deposit,
-        features: data.features,
-        description: data.description,
+        ...data,
         userId: session.user.id
       }
     });
 
-    console.log('Successfully created item:', item);
-    return new NextResponse(JSON.stringify(item), {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },
-    });
+    return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error('Failed to create rental item:', error);
-    if (error instanceof Error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
     return NextResponse.json(
       { error: 'Failed to create rental item' },
       { status: 500 }

@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { UserRole } from "@prisma/client"
+import jwt from "jsonwebtoken"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -62,6 +63,22 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   callbacks: {
+    async signIn({ user }) {
+      if (user) {
+        const token = jwt.sign(
+          {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+          },
+          process.env.NEXTAUTH_SECRET!,
+          { expiresIn: '7d' }
+        )
+        ;(user as any).accessToken = token
+      }
+      return true
+    },
     async session({ token, session }) {
       if (token) {
         session.user.id = token.id as string
@@ -69,11 +86,14 @@ export const authOptions: NextAuthOptions = {
         session.user.email = token.email as string
         session.user.image = token.image as string | null | undefined
         session.user.role = token.role as UserRole
+        session.accessToken = token.accessToken as string
       }
-
       return session
     },
     async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = (user as any).accessToken
+      }
       if (!token.email) {
         return token
       }
@@ -97,6 +117,7 @@ export const authOptions: NextAuthOptions = {
         email: dbUser.email,
         image: dbUser.image,
         role: dbUser.role,
+        accessToken: token.accessToken,
       }
     },
   },
