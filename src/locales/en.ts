@@ -118,16 +118,14 @@ export const en = {
   
   // Footer
   footer: {
-    companyDescription: 'Your trusted partner in finding the perfect home. We connect buyers, sellers, and renters with their dream properties.',
+    companyDescription: 'Your trusted platform for renting out items and offering services. We help you earn money by sharing your belongings and skills with others.',
     quickLinks: 'Quick Links',
     aboutUs: 'About Us',
-    blog: 'Blog',
     services: 'Services',
-    buyProperty: 'Buy Property',
-    rentProperty: 'Rent Property',
-    sellProperty: 'Sell Property',
-    propertyManagement: 'Property Management',
-    consulting: 'Real Estate Consulting',
+    rentOut: 'Rent Out Items',
+    rentIn: 'Rent Items',
+    provideServices: 'Provide Services',
+    orderServices: 'Order Services',
     contactInfo: 'Contact Info',
     allRightsReserved: 'All rights reserved.',
     privacyPolicy: 'Privacy Policy',

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useLocale } from '@/contexts/LocaleContext';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, MessageSquare, Linkedin } from 'lucide-react';
 
 export default function Footer() {
   const { t } = useLocale();
@@ -21,13 +21,10 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
+                <Globe className="w-5 h-5" />
               </a>
               <a href="#" className="hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5" />
               </a>
               <a href="#" className="hover:text-white transition-colors">
                 <Linkedin className="w-5 h-5" />
@@ -56,11 +53,10 @@ export default function Footer() {
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">{t.footer.services}</h3>
             <ul className="space-y-2">
-              <li className="text-sm">{t.footer.buyProperty}</li>
-              <li className="text-sm">{t.footer.rentProperty}</li>
-              <li className="text-sm">{t.footer.sellProperty}</li>
-              <li className="text-sm">{t.footer.propertyManagement}</li>
-              <li className="text-sm">{t.footer.consulting}</li>
+              <li className="text-sm">{t.footer.rentOut}</li>
+              <li className="text-sm">{t.footer.rentIn}</li>
+              <li className="text-sm">{t.footer.provideServices}</li>
+              <li className="text-sm">{t.footer.orderServices}</li>
             </ul>
           </div>
 
@@ -71,17 +67,16 @@ export default function Footer() {
               <li className="flex items-start">
                 <MapPin className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
                 <span className="text-sm">
-                  123 Main Street, Suite 100<br />
-                  New York, NY 10001
+                  {process.env.NEXT_PUBLIC_COMPANY_ADDRESS}
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">+1 (555) 123-4567</span>
+                <span className="text-sm">{process.env.NEXT_PUBLIC_CONTACT_PHONE}</span>
               </li>
               <li className="flex items-center">
                 <Mail className="w-5 h-5 mr-2 flex-shrink-0" />
-                <span className="text-sm">info@propertyfinder.com</span>
+                <span className="text-sm">{process.env.NEXT_PUBLIC_CONTACT_EMAIL}</span>
               </li>
             </ul>
           </div>

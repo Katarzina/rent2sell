@@ -118,16 +118,14 @@ export const cs = {
   
   // Footer
   footer: {
-    companyDescription: 'Váš spolehlivý partner při hledání perfektního domova. Spojujeme kupující, prodávající a nájemce s jejich vysněnými nemovitostmi.',
+    companyDescription: 'Vaše důvěryhodná platforma pro pronájem věcí a poskytování služeb. Pomáháme vám vydělávat sdílením vašich věcí a dovedností s ostatními.',
     quickLinks: 'Rychlé odkazy',
     aboutUs: 'O nás',
-    blog: 'Blog',
     services: 'Služby',
-    buyProperty: 'Koupit nemovitost',
-    rentProperty: 'Pronajmout nemovitost',
-    sellProperty: 'Prodat nemovitost',
-    propertyManagement: 'Správa nemovitostí',
-    consulting: 'Realiní poradenství',
+    rentOut: 'Pronajmout předměty',
+    rentIn: 'Půjčit si předměty',
+    provideServices: 'Poskytovat služby',
+    orderServices: 'Objednat služby',
     contactInfo: 'Kontaktní údaje',
     allRightsReserved: 'Všechna práva vyhrazena.',
     privacyPolicy: 'Zásady ochrany soukromí',
