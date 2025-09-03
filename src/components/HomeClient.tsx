@@ -30,6 +30,7 @@ export default function HomeClient({ initialItems }: HomeClientProps) {
     try {
       const response = await fetch('/api/rental-items', {
         method: 'POST',
+        credentials: 'include', // Добавляем credentials
         headers: {
           'Content-Type': 'application/json',
         },
