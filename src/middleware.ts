@@ -45,6 +45,16 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers)
     requestHeaders.set('x-user-id', (decoded as any).id)
     requestHeaders.set('x-user-role', (decoded as any).role)
+    
+    // Ensure content type is set for POST/PUT/PATCH requests
+    if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
+      requestHeaders.set('Content-Type', 'application/json')
+    }
+
+    // Add CORS headers
+    requestHeaders.set('Access-Control-Allow-Origin', '*')
+    requestHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    requestHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 
     return NextResponse.next({
       request: {
