@@ -75,6 +75,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import jwt from 'jsonwebtoken';
 
 export async function GET() {
   try {
@@ -104,19 +105,37 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const session = await getAuthSession();
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Проверяем Bearer токен
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      // Если нет Bearer токена, пробуем session
+      const session = await getAuthSession();
+      if (!session?.user) {
+        return NextResponse.json(
+          { error: 'Unauthorized - No valid authentication' },
+          { status: 401 }
+        );
+      }
+      // Используем ID из сессии
+      const data = await request.json();
+      const item = await prisma.rentalItem.create({
+        data: {
+          ...data,
+          userId: session.user.id
+        }
+      });
+      return NextResponse.json(item, { status: 201 });
     }
 
+    // Проверяем Bearer токен
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+    
     const data = await request.json();
     const item = await prisma.rentalItem.create({
       data: {
         ...data,
-        userId: session.user.id
+        userId: decoded.id
       }
     });
 
