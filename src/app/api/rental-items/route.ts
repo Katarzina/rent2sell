@@ -105,40 +105,53 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    let userId: string;
+
     // Проверяем Bearer токен
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      // Если нет Bearer токена, пробуем session
-      const session = await getAuthSession();
-      if (!session?.user) {
+    console.log('Auth header:', authHeader);
+
+    if (authHeader?.startsWith('Bearer ')) {
+      // Используем Bearer токен
+      const token = authHeader.split(' ')[1];
+      console.log('Using Bearer token:', token);
+      try {
+        const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
+        userId = decoded.id;
+        console.log('Decoded user ID from token:', userId);
+      } catch (e) {
+        console.error('Token verification failed:', e);
         return NextResponse.json(
-          { error: 'Unauthorized - No valid authentication' },
+          { error: 'Invalid token' },
           { status: 401 }
         );
       }
-      // Используем ID из сессии
-      const data = await request.json();
-      const item = await prisma.rentalItem.create({
-        data: {
-          ...data,
-          userId: session.user.id
-        }
-      });
-      return NextResponse.json(item, { status: 201 });
+    } else {
+      // Пробуем сессию
+      console.log('No Bearer token, checking session');
+      const session = await getAuthSession();
+      if (!session?.user) {
+        console.log('No session found');
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+      userId = session.user.id;
+      console.log('Using session user ID:', userId);
     }
 
-    // Проверяем Bearer токен
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any;
-    
     const data = await request.json();
+    console.log('Creating item with data:', data);
+
     const item = await prisma.rentalItem.create({
       data: {
         ...data,
-        userId: decoded.id
+        userId
       }
     });
 
+    console.log('Created item:', item);
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error('Failed to create rental item:', error);
